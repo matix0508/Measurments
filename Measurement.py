@@ -13,7 +13,7 @@ def FindU(it):
 
 class Quantity:
     def __init__(self):
-        self.quantity = None
+        self.name = None
         self.value = None
         self.unit = None
         self.uncertainty = None
@@ -36,6 +36,7 @@ class Quantity:
         if self.unit != other.unit:
             raise Exception("Wrong units!")
         output = Quantity()
+        output.name = self.quantity
         output.value = self.value + other.value
         if self.uncertainty and other.uncertainty:
             output.uncertainty = self.uncertainty + other.uncertainty
@@ -49,6 +50,7 @@ class Quantity:
         if self.unit != other.unit:
             raise Exception("Wrong units!")
         output = Quantity()
+        output.name = self.quantity
         output.value = self.value - other.value
         if self.uncertainty and other.uncertainty:
             output.uncertainty = self.uncertainty + other.uncertainty
@@ -70,8 +72,12 @@ class Quantity:
             elif other.uncertainty:
                 output.uncertainty = other.uncertainty * self.value
 
-
-            output.unit = other.unit * self.unit
+            if self.unit and other.unit:
+                output.unit = other.unit * self.unit
+            elif self.unit:
+                output = self.unit
+            elif other.unit:
+                output = other.unit
             return output
         else:
             output = Quantity()
@@ -87,13 +93,19 @@ class Quantity:
             output = Quantity()
             output.value = self.value / other.value
             output.uncertainty = (self.uncertainty/self.value + other.uncertainty/other.value) * output.value
-            output.unit = other.unit / self.unit
+            if self.unit and other.unit:
+                output.unit = other.unit / self.unit
+            elif self.unit:
+                output = self.unit
+            elif other.unit:
+                output = 1 / other.unit
             return output
         else:
             output = Quantity()
             output.value = self.value / other
             output.uncertainty = self.uncertainty / other
-            output.unit = self.unit
+            if self.unit:
+                output.unit = self.unit
             return output
 
 
@@ -129,7 +141,7 @@ class Measurements:
 
     def calc_uncertainty(self):
         self.uncertainty = FindU([item.uncertainty for item in self.table])
-        print(self.uncertainty)
+        # print(self.uncertainty)
 
     def add_uncertanty(self, unc):
         self.uncertainty = FindU([self.uncertainty, unc])
