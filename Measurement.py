@@ -114,6 +114,7 @@ class Measurement(Quantity):
     def __init__(self):
         super().__init__()
         self.time = datetime.now()
+        self.quantity = None
 
     def __repr__(self):
         unc = ""
